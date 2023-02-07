@@ -15,7 +15,7 @@ class MenuProvider with ChangeNotifier {
     MenuModel(
       menuName: "Employee Profile",
       iconData: FontAwesomeIcons.user,
-      icon: ImagesFile.profileImg,
+      icon: ImagesFile.empProfile,
     ),
     MenuModel(
       menuName: "Check IN/OUT",

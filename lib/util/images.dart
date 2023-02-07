@@ -5,4 +5,5 @@ class ImagesFile {
   static const chckinImg = 'assets/images/check-in.png';
   static const suprtTicket = 'assets/images/travel-agent.png';
   static const nchkinout = 'assets/images/skyscrapers.png';
+  static const empProfile = 'assets/images/emp_profile.png';
 }

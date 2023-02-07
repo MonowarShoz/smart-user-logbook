@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
+import 'package:technoart_monitoring/Provider/location_provider.dart';
 import 'package:technoart_monitoring/Provider/menu_provider.dart';
 import 'package:technoart_monitoring/util/dimensions.dart';
 import 'package:technoart_monitoring/util/images.dart';
@@ -9,6 +10,7 @@ import 'package:technoart_monitoring/view/base_widgets/under_constactor_screen.d
 import 'package:carousel_slider/carousel_slider.dart';
 import '../util/custom_themes.dart';
 import 'base_widgets/footer_widget.dart';
+import 'package:geocoding/geocoding.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,6 +21,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    getLoc();
+  }
+
+  getLoc() async {
+    await Provider.of<LocationProvider>(context, listen: false).getLoc();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<MenuProvider>(builder: (context, mp, child) {
@@ -133,15 +146,15 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       RichText(
-                          text: TextSpan(
-                              text: 'Techno',
-                              style: josefinSans.copyWith(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 20,
-                                color: Color.fromARGB(255, 3, 21, 122),
-                                // color: Colors.white,
-                              ),
-                              children: [
+                        text: TextSpan(
+                          text: 'Techno',
+                          style: josefinSans.copyWith(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 20,
+                            color: Color.fromARGB(255, 3, 21, 122),
+                            // color: Colors.white,
+                          ),
+                          children: [
                             TextSpan(
                               text: 'Art',
                               style: josefinSans.copyWith(
@@ -151,14 +164,16 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             TextSpan(
-                              text: ' Smart Monitoring',
+                              text: ' Employee LogBook',
                               style: josefinSans.copyWith(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 20,
                                 color: Colors.black,
                               ),
                             ),
-                          ])),
+                          ],
+                        ),
+                      ),
                       // Text(
 
                       //   style: robotoSlab.copyWith(
@@ -198,9 +213,13 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset(
-                              mp.menuList[index].icon!,
-                              height: 46,
+                            SizedBox(
+                              height: 50,
+                              child: Image.asset(
+                                mp.menuList[index].icon!,
+                                //fit: BoxFit.cover,
+                                // height: 46,
+                              ),
                             ),
                             Text(
                               mp.menuList[index].menuName!,
@@ -232,7 +251,7 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           'Important Notice',
-                          style: josefinSans.copyWith(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                          style: josefinSans.copyWith(color: Colors.black, fontSize: 17, fontWeight: FontWeight.w600),
                         ),
                       ),
                       // Padding(
@@ -251,7 +270,7 @@ class _HomePageState extends State<HomePage> {
 
                 //margin: const EdgeInsets.symmetric(vertical: 8),
                 child: Card(
-                  color: Color.fromARGB(255, 188, 203, 229),
+                  color: Color.fromARGB(255, 210, 222, 244),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -262,7 +281,7 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           'Your Status',
-                          style: josefinSans.copyWith(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                          style: josefinSans.copyWith(color: Colors.black, fontSize: 17, fontWeight: FontWeight.w600),
                         ),
                       ),
                       // Padding(
@@ -277,14 +296,91 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Container(
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(color: Color.fromARGB(255, 188, 203, 229), borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: Color.fromARGB(255, 210, 222, 244), borderRadius: BorderRadius.circular(10)),
                   height: Dimensions.fullHeight(context) / 3,
                   child: Column(
-                    children: [],
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                            child: Text(
+                              'Your Current Attendance Status',
+                              style: TextStyle(fontSize: 17),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: Text(
+                                'IN',
+                                style:
+                                    TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: Color.fromARGB(255, 56, 147, 59)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Consumer<LocationProvider>(builder: (context, lp, child) {
+                        return Column(
+                          children: [
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                                  child: Text(
+                                    'Your Current Location',
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                                  child: Text(
+                                    'Latitude',
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                                  child: Text(
+                                    '${lp.latitude}',
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                                  child: Text(
+                                    'Longitude',
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                                  child: Text(
+                                    '${lp.longitude}',
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }),
+                    ],
                   ),
                 ),
               ),
