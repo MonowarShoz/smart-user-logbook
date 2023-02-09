@@ -3,12 +3,18 @@ import 'package:provider/provider.dart';
 import 'package:technoart_monitoring/Provider/location_provider.dart';
 import 'package:technoart_monitoring/Provider/menu_provider.dart';
 import 'package:technoart_monitoring/view/home_page.dart';
+import 'package:technoart_monitoring/repository/di_container.dart' as di;
 
-void main() {
+import 'Provider/data_provider.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await di.init();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) => MenuProvider()),
-      ChangeNotifierProvider(create: (context) => LocationProvider()),
+      ChangeNotifierProvider(create: (context) => di.sl<MenuProvider>()),
+      ChangeNotifierProvider(create: (context) => di.sl<LocationProvider>()),
+      ChangeNotifierProvider(create: (context) => di.sl<DataProvider>()),
     ],
     child: const MyApp(),
   ));

@@ -1,9 +1,11 @@
 import 'dart:async';
-
+import 'package:latlong2/latlong.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import '../repository/data_repo.dart';
 
 class LocationProvider with ChangeNotifier {
   double _latitude = 0.0;
@@ -39,6 +41,7 @@ class LocationProvider with ChangeNotifier {
     determinePosition().then((value) {
       _latitude = value.latitude;
       _longitude = value.longitude;
+      _points.add(LatLng(_latitude, _longitude));
 
       notifyListeners();
     });
@@ -64,6 +67,7 @@ class LocationProvider with ChangeNotifier {
 
         _latitude = position.latitude;
         _longitude = position.longitude;
+        _points.add(LatLng(_latitude, _longitude));
         //notifyListeners();
         // _distanceBetween = Geolocator.distanceBetween(AppConsts.baseLatitude, AppConsts.baseLongitude, latitude, longitude);
         // double distanceInMeters = Geolocator.distanceBetween(52.2165157, 6.9437819, 52.3546274, 4.8285838);
@@ -73,4 +77,29 @@ class LocationProvider with ChangeNotifier {
     });
     //notifyListeners();
   }
+
+  List<Marker> _markers = [];
+  List<Marker> get markers => _markers;
+
+  List<LatLng> _points = [];
+  List<LatLng> get points => _points;
+
+  int pointIndex = 0;
+
+  // markerCalc() {
+  //   pointIndex++;
+  //   if (pointIndex >= points.length) {
+  //     pointIndex = 0;
+  //   }
+
+  //   markers[0] = Marker(
+  //     point: points[pointIndex],
+  //     anchorPos: AnchorPos.align(AnchorAlign.center),
+  //     height: 30,
+  //     width: 30,
+  //     builder: (ctx) => const Icon(Icons.pin_drop),
+  //   );
+  //   markers = List.from(markers);
+  //   notifyListeners();
+  // }
 }

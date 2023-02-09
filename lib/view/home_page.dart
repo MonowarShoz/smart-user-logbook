@@ -240,7 +240,7 @@ class _HomePageState extends State<HomePage> {
 
                 //margin: const EdgeInsets.symmetric(vertical: 8),
                 child: Card(
-                  color: Color.fromARGB(255, 188, 203, 229),
+                  color: Color.fromARGB(255, 210, 222, 244),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -252,6 +252,37 @@ class _HomePageState extends State<HomePage> {
                         child: Text(
                           'Important Notice',
                           style: josefinSans.copyWith(color: Colors.black, fontSize: 17, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: Text(
+                      //     'f',
+                      //     style: josefinSans.copyWith(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                height: 80,
+
+                //margin: const EdgeInsets.symmetric(vertical: 8),
+                child: Card(
+                  color: Color.fromARGB(255, 241, 242, 246),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'New Notice',
+                          style: robotoSlab.copyWith(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400),
                         ),
                       ),
                       // Padding(
@@ -311,7 +342,7 @@ class _HomePageState extends State<HomePage> {
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                             child: Text(
                               'Your Current Attendance Status',
-                              style: TextStyle(fontSize: 17),
+                              style: robotoSlab.copyWith(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400),
                             ),
                           ),
                           Padding(
@@ -336,7 +367,7 @@ class _HomePageState extends State<HomePage> {
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                                   child: Text(
                                     'Your Current Location',
-                                    style: TextStyle(fontSize: 17),
+                                    style: robotoSlab.copyWith(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400),
                                   ),
                                 ),
                               ],
@@ -347,7 +378,7 @@ class _HomePageState extends State<HomePage> {
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                                   child: Text(
                                     'Latitude',
-                                    style: TextStyle(fontSize: 17),
+                                    style: robotoSlab.copyWith(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400),
                                   ),
                                 ),
                                 Padding(
@@ -365,7 +396,7 @@ class _HomePageState extends State<HomePage> {
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                                   child: Text(
                                     'Longitude',
-                                    style: TextStyle(fontSize: 17),
+                                    style: robotoSlab.copyWith(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400),
                                   ),
                                 ),
                                 Padding(
