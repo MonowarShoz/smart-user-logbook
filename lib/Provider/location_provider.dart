@@ -34,9 +34,6 @@ class LocationProvider with ChangeNotifier {
     return await Geolocator.getCurrentPosition();
   }
 
-  List<Placemark> _placemarks = [];
-  List<Placemark> get placeMark => _placemarks;
-
   getLoc() {
     determinePosition().then((value) {
       _latitude = value.latitude;
@@ -76,6 +73,28 @@ class LocationProvider with ChangeNotifier {
       }
     });
     //notifyListeners();
+  }
+
+  List<Placemark> _placemarks = [];
+  List<Placemark> get placemarks => _placemarks;
+  // Future<List<Placemark>> getAddress({double? lat, double? lang}) async {
+  //   var list = [];
+  //    List<Placemark> _addRessList = [];
+  //   // if (lat == null || lang == null) {
+  //   //   return null;
+  //   // }
+  //   _addRessList = await placemarkFromCoordinates(latitude, lang!);
+
+  //   //notifyListeners();
+  //   return _addRessList;
+  // }
+
+  Future getAddress({double? lat, double? lang}) async {
+    if (lat == null || lang == null) {
+      return null;
+    }
+    _placemarks = await placemarkFromCoordinates(latitude, lang);
+    notifyListeners();
   }
 
   List<Marker> _markers = [];
