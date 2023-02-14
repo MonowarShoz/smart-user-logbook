@@ -88,17 +88,18 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               DrawerHeader(
-                  child: Column(
-                children: [
-                  Text('Welcome'),
-                  CircleAvatar(
-                    radius: 30,
-                    child: Image.asset(ImagesFile.suprtTicket, height: 40),
-                  ),
-                  Text('User001'),
-                  Text('ID: 10323231'),
-                ],
-              )),
+                child: Column(
+                  children: [
+                    Text('Welcome'),
+                    CircleAvatar(
+                      radius: 30,
+                      child: Image.asset(ImagesFile.suprtTicket, height: 40),
+                    ),
+                    Text('User001'),
+                    Text('ID: 10323231'),
+                  ],
+                ),
+              ),
               ListTile(
                 leading: Icon(Icons.home),
                 title: Text('Home'),
@@ -215,11 +216,11 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             SizedBox(
                               height: 50,
-                              child: Image.asset(
-                                mp.menuList[index].icon!,
-                                //fit: BoxFit.cover,
-                                // height: 46,
-                              ),
+                              child: Image.asset(mp.menuList[index].icon!, color: Colors.black.withOpacity(0.8)
+
+                                  //fit: BoxFit.cover,
+                                  // height: 46,
+                                  ),
                             ),
                             Text(
                               mp.menuList[index].menuName!,

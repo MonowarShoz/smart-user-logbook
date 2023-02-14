@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:technoart_monitoring/Provider/data_provider.dart';
 import 'package:technoart_monitoring/Provider/location_provider.dart';
 import 'package:technoart_monitoring/util/date_converter.dart';
 import 'package:technoart_monitoring/util/dimensions.dart';
@@ -21,6 +22,8 @@ class _CheckInScreenState extends State<CheckInScreen> {
   bool isCheckIN = false;
 
   TimeOfDay? _secpickedTime;
+  TimeOfDay? _checkedInTime;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -35,7 +38,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<LocationProvider>(builder: (context, lp, child) {
+    return Consumer2<LocationProvider, DataProvider>(builder: (context, lp, dp, child) {
       return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Color.fromARGB(255, 242, 244, 246),
@@ -104,7 +107,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
                                 Flexible(
                                   child: Text(
                                     '${lp.placemarks[0].name},${lp.placemarks[2].name},${lp.placemarks[3].name}',
-                                    style: robotoSlab.copyWith(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400),
+                                    style: josefinSans.copyWith(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400),
                                   ),
                                 ),
                               ],
@@ -198,11 +201,19 @@ class _CheckInScreenState extends State<CheckInScreen> {
                             // ),
                           ],
                         ),
-                        _secpickedTime != null
+
+                        _checkedInTime != null
                             ? RichText(
                                 text: TextSpan(children: [
                                   TextSpan(
-                                    text: _secpickedTime!.hourOfPeriod.toString(),
+                                    text: dp.diff_hr.toString(),
+                                    // text: dp
+                                    //     .timeDifference(
+                                    //       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 5, 60),
+                                    //       TimeOfDay.now().toDateTime(),
+                                    //     )
+                                    //     .inHours
+                                    //     .toString(),
                                     style: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
                                     children: [],
                                   ),
@@ -211,7 +222,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
                                     style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w400),
                                   ),
                                   TextSpan(
-                                    text: _secpickedTime!.minute.toString(),
+                                    text: dp.diff_mn.toString(),
                                     style: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
                                   ),
                                   TextSpan(
@@ -220,27 +231,51 @@ class _CheckInScreenState extends State<CheckInScreen> {
                                   ),
                                 ]),
                               )
-                            : RichText(
-                                text: TextSpan(children: [
-                                  TextSpan(
-                                    text: '0',
-                                    style: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
-                                    children: [],
-                                  ),
-                                  TextSpan(
-                                    text: 'hrs ',
-                                    style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w400),
-                                  ),
-                                  TextSpan(
-                                    text: '0',
-                                    style: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(
-                                    text: 'mins',
-                                    style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w400),
-                                  ),
-                                ]),
-                              ),
+                            : SizedBox.shrink(),
+
+                        // _secpickedTime != null
+                        //     ? RichText(
+                        //         text: TextSpan(children: [
+                        //           TextSpan(
+                        //             text: _secpickedTime!.hourOfPeriod.toString(),
+                        //             style: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
+                        //             children: [],
+                        //           ),
+                        //           TextSpan(
+                        //             text: 'hrs ',
+                        //             style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w400),
+                        //           ),
+                        //           TextSpan(
+                        //             text: _secpickedTime!.minute.toString(),
+                        //             style: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
+                        //           ),
+                        //           TextSpan(
+                        //             text: 'mins',
+                        //             style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w400),
+                        //           ),
+                        //         ]),
+                        //       )
+                        //     : RichText(
+                        //         text: TextSpan(children: [
+                        //           TextSpan(
+                        //             text: '0',
+                        //             style: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
+                        //             children: [],
+                        //           ),
+                        //           TextSpan(
+                        //             text: 'hrs ',
+                        //             style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w400),
+                        //           ),
+                        //           TextSpan(
+                        //             text: '0',
+                        //             style: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
+                        //           ),
+                        //           TextSpan(
+                        //             text: 'mins',
+                        //             style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w400),
+                        //           ),
+                        //         ]),
+                        //       ),
                         // Padding(
                         //   padding: const EdgeInsets.symmetric(vertical: 8.0),
                         //   child: Text(
@@ -408,6 +443,11 @@ class _CheckInScreenState extends State<CheckInScreen> {
                           onPressed: () {
                             setState(() {
                               isCheckIN = !isCheckIN;
+                              if (isCheckIN) {
+                                dp.timeDifference(
+                                    start: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 10, 36));
+                                _checkedInTime = TimeOfDay.now();
+                              }
                             });
                           },
                           child: isCheckIN ? Text('CHECK OUT') : Text('CHECK IN'),

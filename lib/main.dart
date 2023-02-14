@@ -4,6 +4,7 @@ import 'package:technoart_monitoring/Provider/location_provider.dart';
 import 'package:technoart_monitoring/Provider/menu_provider.dart';
 import 'package:technoart_monitoring/view/home_page.dart';
 import 'package:technoart_monitoring/repository/di_container.dart' as di;
+import 'package:technoart_monitoring/view/login/login_page.dart';
 
 import 'Provider/data_provider.dart';
 
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.light,
         hintColor: Color.fromARGB(255, 255, 255, 255),
       ),
-      home: const HomePage(),
+      home: const LoginScreen(),
     );
   }
 }

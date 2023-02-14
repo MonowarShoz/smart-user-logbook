@@ -4,6 +4,7 @@ import 'package:technoart_monitoring/util/images.dart';
 import 'package:technoart_monitoring/view/employee_location/employee_location_screen.dart';
 import '../Models/menu_model.dart';
 import '../repository/data_repo.dart';
+import '../view/Employee_profile/emp_attendance_history.dart';
 import '../view/check_in_out/check_in_screen.dart';
 
 class MenuProvider with ChangeNotifier {
@@ -18,6 +19,7 @@ class MenuProvider with ChangeNotifier {
       menuName: "Employee Profile",
       iconData: FontAwesomeIcons.user,
       icon: ImagesFile.empProfile,
+      routeName: const EmpAttendanceHistory(),
     ),
     MenuModel(
       menuName: "Check IN/OUT",

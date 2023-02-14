@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:technoart_monitoring/util/date_converter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../model/Emp_att_d_model.dart';
 import '../model/response_model.dart';
 import '../model/update_token_model.dart';
 import '../model/user_add_model.dart';
@@ -246,6 +249,87 @@ class DataProvider with ChangeNotifier {
     return n.toString().padLeft(2, '0');
   }
 
+  DateTime chInDate = DateTime.now();
+  DateTime outDate = DateTime.now().add(Duration(hours: 8));
+
+  double toDouble(TimeOfDay myTime) {
+    return myTime.hour + myTime.minute / 60.0;
+  }
+
+  int diff_hr = 0;
+  int diff_mn = 0;
+
+  timeDifference({required DateTime start}) {
+    diff_hr = DateTime.now().difference(start).inHours;
+    diff_mn = DateTime.now().difference(start).inMinutes.remainder(60);
+    notifyListeners();
+  }
+
+  final startTime = DateTime(2020, 02, 20, 10, 30);
+  final currentTime = DateTime.now();
+
+  // final diff_dy = currentTime.difference(startTime).inDays;
+  // final diff_hr = currentTime.difference(startTime).inHours;
+  // final diff_mn = currentTime.difference(startTime).inMinutes;
+  // final diff_sc = currentTime.difference(startTime).inSeconds;
+
+  // print(diff_dy);
+  // print(diff_hr);
+  // print(diff_mn);
+  // print(diff_sc);
+
+  newTimeDifference() {}
+
+  List<EmpattModel> _empattdList = [
+    EmpattModel(
+      name: 'Khaled Ahmed',
+      time: '10.03 am - 7.00 pm',
+      lateTime: '1 hour',
+      isLate: false,
+    ),
+    EmpattModel(
+      name: 'Kamrul Islam',
+      time: '10.03 am - 7.00 pm',
+      lateTime: '1 hour',
+      isLate: false,
+    ),
+    EmpattModel(
+      name: 'M Uddin',
+      time: '10.03 am - 7.00 pm',
+      lateTime: '1 hour',
+      isLate: true,
+    ),
+    EmpattModel(
+      name: 'M Hossain',
+      time: '10.13 am - 7.00 pm',
+      lateTime: '1 hour',
+      isLate: true,
+    ),
+    EmpattModel(
+      name: 'T Khan',
+      time: '10.23 am - 7.00 pm',
+      lateTime: '1 hour',
+      isLate: false,
+    ),
+  ];
+  List<EmpattModel> get empattDList => _empattdList;
+
+  // Duration timeDifference(DateTime inTime, DateTime outTime) {
+  //   var timeDiff = outTime.difference(inTime);
+  //   return timeDiff;
+  // }
+
+  // int timeDiff(TimeOfDay intime, TimeOfDay outtime) {
+  //   var diff = outtime.compareTo(intime);
+  //   return diff;
+  // }
+
+  // String checkedOutDate = DateConverter.formatDateIOS(DateTime.now().add(Duration(hours: 8)).toString(), isTime: true);
+
+  // var checkedInDate = DateConverter.formatDateIOS(DateTime.now().toString());
+
+  //var diff =
+
   // Future<void> uploadImageToFtp(File clickedImage) async {
   //   try {
   //     FTPConnect ftpConnect = FTPConnect(
@@ -270,4 +354,26 @@ class DataProvider with ChangeNotifier {
   //   }
   //   notifyListeners();
   // }
+}
+
+extension TimeOfDayExtension on TimeOfDay {
+  int compareTo(TimeOfDay other) {
+    if (hour < other.hour) return -1;
+    if (hour > other.hour) return 1;
+    if (minute < other.minute) return -1;
+    if (minute > other.minute) return 1;
+    return 0;
+  }
+}
+
+extension DateTimeExtension on DateTime {
+  DateTime applied(TimeOfDay time) {
+    return DateTime(year, month, day, time.hour, time.minute);
+  }
+}
+
+extension TOD on TimeOfDay {
+  DateTime toDateTime() {
+    return DateTime(1, 1, 1, hour, minute);
+  }
 }
