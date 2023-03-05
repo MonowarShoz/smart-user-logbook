@@ -4,7 +4,17 @@ class UserAddModel {
   double? longitude;
   double? latitude;
   String? timeOfCreate;
-  UserAddModel({this.name, this.firebaseDivToken, this.longitude, this.latitude, this.timeOfCreate});
+  String? designation;
+  String? userImage;
+  UserAddModel({
+    this.name,
+    this.firebaseDivToken,
+    this.longitude,
+    this.latitude,
+    this.timeOfCreate,
+    this.designation,
+    this.userImage,
+  });
 
   UserAddModel.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -12,6 +22,8 @@ class UserAddModel {
     longitude = json['longitude'];
     latitude = json['latitude'];
     timeOfCreate = json['timeOfCreate'];
+    designation = json['designation'];
+    userImage = json['userImage'];
   }
 
   Map<String, dynamic> toJson() {
@@ -21,6 +33,8 @@ class UserAddModel {
     data['longitude'] = this.longitude;
     data['latitude'] = this.latitude;
     data['timeOfCreate'] = this.timeOfCreate;
+    data['designation'] = this.designation;
+    data['userImage'] = this.userImage;
     return data;
   }
 }

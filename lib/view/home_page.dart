@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
+import 'package:technoart_monitoring/Models/user_ob_model.dart';
+import 'package:technoart_monitoring/Provider/data_provider.dart';
 import 'package:technoart_monitoring/Provider/location_provider.dart';
 import 'package:technoart_monitoring/Provider/menu_provider.dart';
+import 'package:technoart_monitoring/objectbox.g.dart';
 import 'package:technoart_monitoring/util/dimensions.dart';
 import 'package:technoart_monitoring/util/images.dart';
 import 'package:technoart_monitoring/view/base_widgets/under_constactor_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import '../Models/grp_ob_model.dart';
 import '../util/custom_themes.dart';
 import 'base_widgets/footer_widget.dart';
 import 'package:geocoding/geocoding.dart';
@@ -21,10 +25,43 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  late final Store _store;
+  late Box<UserOB> _usersBox;
+  UserOB? res;
+  int? id;
+
+  saveToObjectBox() {
+    final result = UserOB(
+      name: Provider.of<DataProvider>(context, listen: false).userModel!.name!,
+    );
+    id = _usersBox.put(result);
+    loadName();
+  }
+
+  Future<void> _loadStore() async {
+    _store = await openStore();
+    _usersBox = _store.box<UserOB>();
+    //loadName();
+  }
+
+  loadName() {
+    setState(() {
+      res = _usersBox.get(id!);
+    });
+  }
+
+  @override
+  void dispose() {
+    _store.close();
+    super.dispose();
+  }
 
   @override
   void initState() {
+    _loadStore();
+
     super.initState();
+
     getLoc();
   }
 
@@ -34,7 +71,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MenuProvider>(builder: (context, mp, child) {
+    return Consumer2<MenuProvider, DataProvider>(builder: (context, mp, dp, child) {
       return Scaffold(
         key: _scaffoldKey,
         // appBar: PreferredSize(
@@ -91,12 +128,24 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   children: [
                     Text('Welcome'),
-                    CircleAvatar(
-                      radius: 30,
-                      child: Image.asset(ImagesFile.suprtTicket, height: 40),
-                    ),
-                    Text('User001'),
-                    Text('ID: 10323231'),
+                    dp.userModel!.userImage != null
+                        ? CircleAvatar(
+                            radius: 30,
+                            backgroundImage: MemoryImage(dp.convertFromBase64(dp.userModel!.userImage!)),
+                          )
+                        : CircleAvatar(
+                            radius: 30,
+                            child: Image.asset(ImagesFile.suprtTicket, height: 40),
+                          ),
+                    // CircleAvatar(
+                    //   radius: 30,
+
+                    //   child: dp.userModel!.userImage != null
+                    //       ? Image.memory(dp.convertFromBase64(dp.userModel!.userImage!))
+                    //       : Image.asset(ImagesFile.suprtTicket, height: 40),
+                    // ),
+                    Text('${dp.userModel!.name!}'),
+                    Text('${dp.userModel!.designation!}'),
                   ],
                 ),
               ),
@@ -251,7 +300,7 @@ class _HomePageState extends State<HomePage> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Important Notice',
+                          'Important Notice ${res?.name}',
                           style: josefinSans.copyWith(color: Colors.black, fontSize: 17, fontWeight: FontWeight.w600),
                         ),
                       ),
@@ -266,34 +315,39 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              Container(
-                width: double.infinity,
-                height: 80,
+              InkWell(
+                onTap: () {
+                  saveToObjectBox();
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 80,
 
-                //margin: const EdgeInsets.symmetric(vertical: 8),
-                child: Card(
-                  color: Color.fromARGB(255, 241, 242, 246),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'New Notice',
-                          style: robotoSlab.copyWith(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400),
+                  //margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: Card(
+                    color: Color.fromARGB(255, 241, 242, 246),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'New Notice',
+                            style: robotoSlab.copyWith(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w400),
+                          ),
                         ),
-                      ),
-                      // Padding(
-                      //   padding: const EdgeInsets.all(8.0),
-                      //   child: Text(
-                      //     'f',
-                      //     style: josefinSans.copyWith(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
-                      //   ),
-                      // ),
-                    ],
+                        // Padding(
+                        //   padding: const EdgeInsets.all(8.0),
+                        //   child: Text(
+                        //     'f',
+                        //     style: josefinSans.copyWith(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                        //   ),
+                        // ),
+                      ],
+                    ),
                   ),
                 ),
               ),

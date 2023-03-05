@@ -10,6 +10,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:provider/provider.dart';
 
+import '../../Provider/data_provider.dart';
 import '../../Provider/location_provider.dart';
 
 class EmployeeLocationScreen extends StatefulWidget {
@@ -176,6 +177,7 @@ class _EmployeeLocationScreenState extends State<EmployeeLocationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<DataProvider>(context, listen: false).getAllUserList();
     Provider.of<LocationProvider>(context, listen: false).liveLocation();
     return Consumer<LocationProvider>(builder: (context, lp, child) {
       return Scaffold(

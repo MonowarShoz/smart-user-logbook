@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -16,6 +18,7 @@ import '../model/user_add_model.dart';
 import '../model/user_model.dart';
 import '../repository/data_repo.dart';
 import '../responseApi/api_response.dart';
+import 'package:image_picker/image_picker.dart';
 
 class DataProvider with ChangeNotifier {
   final DataRepo dataRepo;
@@ -166,12 +169,54 @@ class DataProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> openMap(double latitude, double longitude) async {
-    final googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
-    if (await launchUrl(Uri.parse(googleUrl))) {
-      await launchUrl(Uri.parse(googleUrl), mode: LaunchMode.externalApplication);
+  Future<void> openMap({double? latitude, double? longitude}) async {
+    const url =
+        'https://www.google.com/maps/dir/?api=1&origin=23.816707361499585, 90.36026101096144&destination=23.809398876188844, 90.35731052819888&travelmode=driving&dir_action=navigate';
+    // final googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    if (await launchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.inAppWebView);
     } else {
       throw 'Could not open the map.';
+    }
+  }
+
+  File? _selectedImg;
+  File? get selectedImg => _selectedImg;
+
+  String? _base64Img;
+  String? get base64Img => _base64Img;
+  Uint8List convertFromBase64(String base64string) {
+    var imgbyte = base64Decode(base64string);
+    return imgbyte;
+  }
+
+  convertToBase64({required File imgFile}) async {
+    Uint8List bytes = await imgFile.readAsBytes();
+    _base64Img = base64Encode(bytes);
+  }
+
+  Future pickImage() async {
+    try {
+      final image = await ImagePicker().pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.rear,
+        imageQuality: 90,
+      );
+      if (image == null) return;
+      final img = File(image.path);
+      Directory? tempDir = await getExternalStorageDirectory();
+      String tempPath = tempDir!.path;
+      final String filePath = '$tempPath/image.png';
+      await img.copy(filePath);
+      // await SaverGallery.saveFile(filePath);
+
+      _selectedImg = img;
+
+      if (selectedImg == null) return;
+      convertToBase64(imgFile: selectedImg!);
+      notifyListeners();
+    } on PlatformException catch (e) {
+      print('failed $e');
     }
   }
 

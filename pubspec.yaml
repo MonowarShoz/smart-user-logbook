@@ -41,6 +41,9 @@ dependencies:
   intl:
   google_fonts:
   flutter_native_splash:
+  firebase_core: ^2.4.1
+  flutter_local_notifications: ^13.0.0
+  firebase_messaging: ^14.2.1
   font_awesome_flutter: ^10.3.0
   carousel_slider: ^4.2.1
   geocoding: ^2.0.5
@@ -50,6 +53,11 @@ dependencies:
   flutter_map_marker_cluster: ^1.0.1
   url_launcher: ^6.1.9
   get_it: ^7.2.0
+  shared_preferences: ^2.0.17
+  flutter_background_service: ^2.4.6
+  objectbox: ^1.7.2
+  objectbox_flutter_libs: any
+  image_picker: ^0.8.6+4
 
 dev_dependencies:
   flutter_test:
@@ -61,6 +69,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  build_runner: ^2.3.3
+  objectbox_generator: any
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

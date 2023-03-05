@@ -47,6 +47,11 @@ class LocationProvider with ChangeNotifier {
   StreamSubscription<Position>? _positionStream;
   StreamSubscription<Position>? get positionStream => _positionStream;
 
+  addpoint(double _latitude,double _longitude){
+    _points.add(LatLng(_latitude, _longitude));
+    notifyListeners();
+  }
+
   liveLocation() {
     // const LocationSettings locationSettings = LocationSettings(
     //   accuracy: LocationAccuracy.high,
@@ -64,7 +69,7 @@ class LocationProvider with ChangeNotifier {
 
         _latitude = position.latitude;
         _longitude = position.longitude;
-        _points.add(LatLng(_latitude, _longitude));
+        //_points.add(LatLng(_latitude, _longitude));
         //notifyListeners();
         // _distanceBetween = Geolocator.distanceBetween(AppConsts.baseLatitude, AppConsts.baseLongitude, latitude, longitude);
         // double distanceInMeters = Geolocator.distanceBetween(52.2165157, 6.9437819, 52.3546274, 4.8285838);

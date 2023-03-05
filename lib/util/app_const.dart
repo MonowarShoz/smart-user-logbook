@@ -1,8 +1,9 @@
 class AppConsts {
-  //static const String baseUrl = 'http://103.110.218.55:1045/api/';
   static const String baseUrl = 'http://192.168.0.249:1045/api/';
-  static const double baseLongitude = 90.3601855;
-  static const double baseLatitude = 23.8166277;
+  // static const String baseUrl = 'http://103.110.218.55:1045/api/';
+  static const double baseLongitude = 90.360228;
+  static const double baseLatitude = 23.816685;
+  // 23.816685, 90.360228
   // double baseLongitude = 90.3601855;
   // double baseLatitude = 23.8166277;
 
