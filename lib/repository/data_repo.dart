@@ -18,11 +18,11 @@ class DataRepo {
     }
   }
 
-  Future<ApiResponse> loginUser({String? username}) async {
+  Future<ApiResponse> loginUser({required String username, required String password}) async {
     try {
       final response = await dioClient.post(
         'User/Login',
-        data: '"$username"',
+        data: {"userName": "$username", "password": "$password"},
       );
       return ApiResponse.withSuccess(response);
     } catch (e) {
@@ -48,6 +48,30 @@ class DataRepo {
         'User/$id',
         data: userAddModel.toJson(),
       );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  Future<ApiResponse> updateInfo(UserAddModel userAddModel, String id) async {
+    try {
+      final response = await dioClient.put(
+        'User/updateInfo/$id',
+        data: userAddModel.toJson(),
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  Future<ApiResponse> getPrayerTime() async {
+    try {
+      // final response = await dioClient.get('users/2');
+
+      final response = await dioClient
+          .get('http://api.aladhan.com/v1/timingsByCity/26-03-2023?city=%24Dhaka&country=%24Bangladesh&method=%242');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

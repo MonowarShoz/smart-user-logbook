@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:technoart_monitoring/util/date_converter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../Models/timing_model.dart';
 import '../model/Emp_att_d_model.dart';
 import '../model/response_model.dart';
 import '../model/update_token_model.dart';
@@ -55,11 +58,11 @@ class DataProvider with ChangeNotifier {
     return userModel;
   }
 
-  Future<ResponseModel> loginUser({String? user}) async {
+  Future<ResponseModel> loginUser({required String user, required String password}) async {
     _userModel = UserModel();
     _isLoading = true;
 
-    ApiResponse apiResponse = await dataRepo.loginUser(username: user);
+    ApiResponse apiResponse = await dataRepo.loginUser(username: user, password: password);
     _isLoading = false;
     ResponseModel responseModel;
 
@@ -87,6 +90,21 @@ class DataProvider with ChangeNotifier {
       //   _userModel = UserModel.fromJson(element);
       // }
     }
+    notifyListeners();
+  }
+
+  Future updateUserInfo(UserAddModel userAddModel, String id) async {
+    // _userModel = null;
+    ApiResponse apiResponse = await dataRepo.updateInfo(userAddModel, id);
+    if (apiResponse.response != null && (apiResponse.response!.statusCode == 200 || apiResponse.response!.statusCode == 201)) {
+    } else {
+      debugPrint('Failed');
+    }
+    notifyListeners();
+  }
+
+  logout() {
+    _userModel = null;
     notifyListeners();
   }
 
@@ -191,8 +209,10 @@ class DataProvider with ChangeNotifier {
   }
 
   convertToBase64({required File imgFile}) async {
-    Uint8List bytes = await imgFile.readAsBytes();
+    List<int> bytes = await imgFile.readAsBytes();
+    // log(bytes.toString());
     _base64Img = base64Encode(bytes);
+    log('Image string $base64Img');
   }
 
   Future pickImage() async {
@@ -214,30 +234,36 @@ class DataProvider with ChangeNotifier {
 
       if (selectedImg == null) return;
       convertToBase64(imgFile: selectedImg!);
+
       notifyListeners();
     } on PlatformException catch (e) {
       print('failed $e');
     }
   }
 
-  sendNotification(String title, String token, String name, String latitude, String longitude) async {
+  // Future<AccessToken> getAccessToken() async{
+  //   final serviceAccount = await get
+  // }
+
+  sendNotification({String? title, required String token, String? name, String? latitude, String? longitude}) async {
     final data = {
       'id': '1',
       'status': 'done',
-      'message': '$latitude$longitude',
+      'message': 'Hello',
     };
     try {
       http.Response response = await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
           headers: <String, String>{
             'Content-Type': 'application/json',
             'Authorization':
-                'key=AAAAywDtows:APA91bEgpC4Zu5hgijoy0MnzxY5B1eFbiUHuLxI-Y7b-Ra4XdgUUBvJ2yrRPocOA6M3YFaKNo5aZ2v4X2pCy2MAuI8zTfp48MJYVq6Oc5S4FscS30sSkY3NLr6z8mTmCqbd7KmC5hZq9'
+                'key=AAAAi8BbW-8:APA91bEa3eyOZrR0dU_uPzLQQTITaLscx1gRNfRNixtkS6yvnRLA6SGVKPt36ysIklL0Tgfr3vjjIwQTE1ZpkVO4PAZGKnFPnfG-eopE2wP8qp_k8eCPUl1HhYPEatCaDffyQlJ_v1hA'
           },
           body: jsonEncode(
             <String, dynamic>{
               'notification': <String, dynamic>{
-                'title': title,
-                'body': 'You are notified by $name,He is in this Location Latitude:$latitude......Longitude:$longitude'
+                'title': "HEllo",
+                'body': 'You are notified by $name,',
+                'image': 'https://fastly.picsum.photos/id/237/200/300.jpg?hmac=TmmQSbShHz9CdQm0NkEjx1Dyh_Y984R9LpNrpvH2D_U'
               },
               'priority': 'high',
               'data': data,
@@ -358,6 +384,18 @@ class DataProvider with ChangeNotifier {
     ),
   ];
   List<EmpattModel> get empattDList => _empattdList;
+
+  Timings? _timings;
+  Timings? get timings => _timings;
+
+  Future prayerTime() async {
+    _timings = null;
+
+    ApiResponse apiResponse = await dataRepo.getPrayerTime();
+    if ((apiResponse.response != null) && (apiResponse.response!.statusCode == 200 || apiResponse.response!.statusCode == 200)) {
+      _timings = Timings.fromJson(apiResponse.response!.data["data"]["timings"]);
+    } else {}
+  }
 
   // Duration timeDifference(DateTime inTime, DateTime outTime) {
   //   var timeDiff = outTime.difference(inTime);
