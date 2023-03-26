@@ -9,10 +9,13 @@ import 'package:technoart_monitoring/Provider/menu_provider.dart';
 import 'package:technoart_monitoring/objectbox.g.dart';
 import 'package:technoart_monitoring/util/dimensions.dart';
 import 'package:technoart_monitoring/util/images.dart';
+import 'package:technoart_monitoring/view/Profile/edit_profile.dart';
 import 'package:technoart_monitoring/view/base_widgets/under_constactor_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:technoart_monitoring/view/login/login_page.dart';
 import '../Models/grp_ob_model.dart';
 import '../util/custom_themes.dart';
+import 'Profile/drawer_page.dart';
 import 'base_widgets/footer_widget.dart';
 import 'package:geocoding/geocoding.dart';
 
@@ -121,44 +124,8 @@ class _HomePageState extends State<HomePage> {
         //     // ),
         //   ),
         // ),
-        drawer: Drawer(
-          child: Column(
-            children: [
-              DrawerHeader(
-                child: Column(
-                  children: [
-                    Text('Welcome'),
-                    dp.userModel!.userImage != null
-                        ? CircleAvatar(
-                            radius: 30,
-                            backgroundImage: MemoryImage(dp.convertFromBase64(dp.userModel!.userImage!)),
-                          )
-                        : CircleAvatar(
-                            radius: 30,
-                            child: Image.asset(ImagesFile.suprtTicket, height: 40),
-                          ),
-                    // CircleAvatar(
-                    //   radius: 30,
-
-                    //   child: dp.userModel!.userImage != null
-                    //       ? Image.memory(dp.convertFromBase64(dp.userModel!.userImage!))
-                    //       : Image.asset(ImagesFile.suprtTicket, height: 40),
-                    // ),
-                    Text('${dp.userModel!.name!}'),
-                    Text('${dp.userModel!.designation!}'),
-                  ],
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.home),
-                title: Text('Home'),
-              ),
-              ListTile(
-                leading: Icon(Icons.logout),
-                title: Text('Logout'),
-              ),
-            ],
-          ),
+        drawer: DrawerPage(
+          dp: dp,
         ),
         body: SafeArea(
           child: Column(
@@ -300,7 +267,7 @@ class _HomePageState extends State<HomePage> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Important Notice ${res?.name}',
+                          'Important Notice ',
                           style: josefinSans.copyWith(color: Colors.black, fontSize: 17, fontWeight: FontWeight.w600),
                         ),
                       ),

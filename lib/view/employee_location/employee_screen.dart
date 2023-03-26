@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:technoart_monitoring/util/custom_themes.dart';
@@ -6,6 +7,9 @@ import 'package:technoart_monitoring/view/base_widgets/footer_widget.dart';
 import '../../Provider/data_provider.dart';
 import '../../Provider/location_provider.dart';
 import '../../model/user_add_model.dart';
+import '../../util/code_util.dart';
+import '../../util/local_notif.dart';
+import 'notifcation_message.dart';
 
 class EmployeeScreen extends StatefulWidget {
   const EmployeeScreen({super.key});
@@ -17,9 +21,40 @@ class EmployeeScreen extends StatefulWidget {
 class _EmployeeScreenState extends State<EmployeeScreen> {
   final nameController = TextEditingController();
   final desigController = TextEditingController();
+
+  Future<void> setUpInteractMessage() async {
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+    }
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    if (message.data['status'] == 'done') {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => NotifMessage(message: message),
+      ));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+    setUpInteractMessage();
+    FirebaseMessaging.instance.getInitialMessage();
+    FirebaseMessaging.onMessage.listen((event) {
+      LocalNotificationService.display(event);
+    });
+  }
+
+  getUser() async {
+    await Provider.of<DataProvider>(context, listen: false).getAllUserList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Provider.of<DataProvider>(context, listen: false).getAllUserList();
     final size = MediaQuery.of(context).size;
     print(size.width);
     return Consumer2<DataProvider, LocationProvider>(builder: (context, dp, lp, child) {
@@ -33,117 +68,9 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
             style: robotoSlab.copyWith(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500, letterSpacing: 2),
           ),
           actions: [
-            IconButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return Consumer<DataProvider>(builder: (context, ndp, child) {
-                      return AlertDialog(
-                        //contentPadding: EdgeInsets.zero,
-                        insetPadding: EdgeInsets.zero,
-                        actions: [
-                          IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: Icon(Icons.cancel),
-                          )
-                        ],
-                        content: Container(
-                          height: size.height / 2,
-                          width: size.width,
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  controller: nameController,
-                                  decoration: InputDecoration(border: OutlineInputBorder()),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  controller: desigController,
-                                  decoration: InputDecoration(border: OutlineInputBorder()),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 9),
-                                child: Container(
-                                  height: 40,
-                                  decoration:
-                                      BoxDecoration(color: Colors.amber.shade100, borderRadius: BorderRadius.circular(10)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 9),
-                                        child: Text('Pick Image'),
-                                      ),
-                                      // selectedImg == null
-                                      //     ? IconButton(
-                                      //         onPressed: () async {
-                                      //           await pickImage();
-                                      //         },
-                                      //         // onPressed: pickImage,
-                                      //         icon: Icon(Icons.camera),
-                                      //       )
-                                      //     : ClipRRect(
-                                      //         borderRadius: BorderRadius.circular(15),
-                                      //         child: Image.file(
-                                      //           selectedImg!,
-                                      //           //dp.selectedImg!,
-                                      //           cacheHeight: 40,
-                                      //           cacheWidth: 40,
-                                      //         ),
-                                      //       ),
-                                      ndp.selectedImg == null
-                                          ? IconButton(
-                                              onPressed: () async {
-                                                await ndp.pickImage();
-                                              },
-                                              // onPressed: pickImage,
-                                              icon: Icon(Icons.camera),
-                                            )
-                                          : ClipRRect(
-                                              borderRadius: BorderRadius.circular(15),
-                                              child: Image.file(
-                                                ndp.selectedImg!,
-                                                cacheHeight: 40,
-                                                cacheWidth: 40,
-                                              ),
-                                            ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              MaterialButton(
-                                onPressed: () {
-                                  ndp.addUser(UserAddModel(
-                                    name: nameController.text,
-                                    firebaseDivToken: '',
-                                    latitude: ndp.latitude,
-                                    longitude: ndp.longitude,
-                                    timeOfCreate: DateTime.now().toString(),
-                                    designation: desigController.text,
-                                    userImage: ndp.base64Img,
-                                  ));
-                                  Navigator.pop(context);
-                                },
-                                child: Text('ADD'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    });
-                  },
-                );
-              },
-              icon: Icon(Icons.add),
-            ),
+            CircleAvatar(
+              backgroundImage: MemoryImage(dp.convertFromBase64(CodeUtil.decompress(dp.userModel!.strImg!))),
+            )
           ],
         ),
         body: LayoutBuilder(
@@ -164,12 +91,14 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                           var item = dp.userList[index];
                           return ListTile(
                             onTap: () {
-                              dp.openMap();
+                              debugPrint("gg${item.firebaseDivToken!}");
+                              dp.sendNotification(token: item.firebaseDivToken!, name: dp.userModel!.name);
+                              // dp.openMap();
                             },
-                            leading: item.userImage != null
+                            leading: item.strImg!.isNotEmpty
                                 ? CircleAvatar(
                                     backgroundImage: MemoryImage(
-                                      dp.convertFromBase64(item.userImage!),
+                                      dp.convertFromBase64(CodeUtil.decompress(item.strImg!)),
                                     ),
                                     // child: Image.memory(
 
@@ -178,7 +107,11 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                                     //     : Text('no'),
                                   )
                                 : CircleAvatar(
-                                    child: Center(child: Text('no img')),
+                                    child: Center(
+                                        child: Text(
+                                      'no img',
+                                      textAlign: TextAlign.center,
+                                    )),
                                   ),
                             title: Text('${item.name}'),
                             subtitle: Text('${item.designation}'),

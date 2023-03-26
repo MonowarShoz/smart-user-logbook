@@ -10,16 +10,11 @@ class ApiErrorHandler {
             case DioErrorType.cancel:
               errorDescription = "Request to API server was cancelled";
               break;
-            case DioErrorType.connectTimeout:
-              errorDescription = "Connection timeout with API server";
-              break;
-            case DioErrorType.other:
-              errorDescription = "Connection to API server failed due to internet connection";
-              break;
+
             case DioErrorType.receiveTimeout:
               errorDescription = "Receive timeout in connection with API server";
               break;
-            case DioErrorType.response:
+            case DioErrorType.badResponse:
               switch (error.response!.statusCode) {
                 case 404:
                 case 500:
@@ -36,6 +31,20 @@ class ApiErrorHandler {
               break;
             case DioErrorType.sendTimeout:
               errorDescription = "Send timeout with server";
+              break;
+            case DioErrorType.connectionTimeout:
+              errorDescription = "Connection timeout with API server";
+
+              break;
+            case DioErrorType.badCertificate:
+              errorDescription = "Connection timeout with API server";
+              break;
+
+            case DioErrorType.connectionError:
+              errorDescription = "Connection Failed with API server";
+              break;
+            case DioErrorType.unknown:
+              errorDescription = "Unknown error";
               break;
           }
         } else {
