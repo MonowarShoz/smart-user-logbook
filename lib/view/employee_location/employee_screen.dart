@@ -21,6 +21,7 @@ class EmployeeScreen extends StatefulWidget {
 class _EmployeeScreenState extends State<EmployeeScreen> {
   final nameController = TextEditingController();
   final desigController = TextEditingController();
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   Future<void> setUpInteractMessage() async {
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
@@ -59,6 +60,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
     print(size.width);
     return Consumer2<DataProvider, LocationProvider>(builder: (context, dp, lp, child) {
       return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           elevation: 0,
           iconTheme: IconThemeData(color: Colors.black),
@@ -70,9 +72,17 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
           actions: [
             CircleAvatar(
               backgroundImage: MemoryImage(dp.convertFromBase64(CodeUtil.decompress(dp.userModel!.strImg!))),
-            )
+            ),
+            // IconButton(
+            //     onPressed: () {
+            //       _scaffoldKey.currentState!.openEndDrawer();
+            //     },
+            //     icon: Icon(Icons.person)),
           ],
         ),
+        // endDrawer: Drawer(
+        //   child: Text('data'),
+        // ),
         body: LayoutBuilder(
           builder: (p0, p1) {
             if (p1.maxWidth < 600) {
@@ -82,43 +92,49 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: ListView.separated(
-                        separatorBuilder: (BuildContext context, int index) => const Divider(),
-                        //shrinkWrap: true,
-                        itemCount: dp.userList.length,
-                        itemBuilder: (context, index) {
-                          var item = dp.userList[index];
-                          return ListTile(
-                            onTap: () {
-                              debugPrint("gg${item.firebaseDivToken!}");
-                              dp.sendNotification(token: item.firebaseDivToken!, name: dp.userModel!.name);
-                              // dp.openMap();
-                            },
-                            leading: item.strImg!.isNotEmpty
-                                ? CircleAvatar(
-                                    backgroundImage: MemoryImage(
-                                      dp.convertFromBase64(CodeUtil.decompress(item.strImg!)),
-                                    ),
-                                    // child: Image.memory(
+                    dp.isLoading
+                        ? Center(
+                            child: LinearProgressIndicator(),
+                          )
+                        : Expanded(
+                            child: ListView.separated(
+                              separatorBuilder: (BuildContext context, int index) => const Divider(),
+                              //shrinkWrap: true,
+                              itemCount: dp.userList.length,
+                              itemBuilder: (context, index) {
+                                var item = dp.userList[index];
+                                return ListTile(
+                                  onTap: () {
+                                    dp.decomSize(item.strImg!);
 
-                                    //         fit: BoxFit.cover,
-                                    //       )
-                                    //     : Text('no'),
-                                  )
-                                : CircleAvatar(
-                                    child: Center(
-                                        child: Text(
-                                      'no img',
-                                      textAlign: TextAlign.center,
-                                    )),
-                                  ),
-                            title: Text('${item.name}'),
-                            subtitle: Text('${item.designation}'),
-                          );
-                        },
-                      ),
-                    ),
+                                    debugPrint("gg${item.firebaseDivToken!}");
+                                    //dp.sendNotification(token: item.firebaseDivToken!, name: dp.userModel!.name);
+                                    // dp.openMap();
+                                  },
+                                  leading: item.strImg!.isNotEmpty
+                                      ? CircleAvatar(
+                                          backgroundImage: MemoryImage(
+                                            dp.convertFromBase64(CodeUtil.decompress(item.strImg!)),
+                                          ),
+                                          // child: Image.memory(
+
+                                          //         fit: BoxFit.cover,
+                                          //       )
+                                          //     : Text('no'),
+                                        )
+                                      : CircleAvatar(
+                                          child: Center(
+                                              child: Text(
+                                            'no img',
+                                            textAlign: TextAlign.center,
+                                          )),
+                                        ),
+                                  title: Text('${item.name}'),
+                                  subtitle: Text('${item.designation}'),
+                                );
+                              },
+                            ),
+                          ),
                     FooterWidget(),
                   ],
                 ),

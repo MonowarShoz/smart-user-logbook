@@ -233,41 +233,43 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: SizedBox(
-            width: Dimensions.fullWidth(context) / 2,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () async {
-                login(dp);
-                final service = FlutterBackgroundService();
-                // var isRunning = await service.isRunning();
-                // if (isRunning) {
-                //   service.invoke("stopService");
-                // } else {
-                service.startService();
-                // }
+        dp.isLoading
+            ? CircularProgressIndicator()
+            : Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: SizedBox(
+                  width: Dimensions.fullWidth(context) / 2,
+                  height: 40,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      login(dp);
+                      final service = FlutterBackgroundService();
+                      // var isRunning = await service.isRunning();
+                      // if (isRunning) {
+                      //   service.invoke("stopService");
+                      // } else {
+                      service.startService();
+                      // }
 
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => HomePage(),
-                //   ),
-                // );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 16, 133, 230),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => HomePage(),
+                      //   ),
+                      // );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 16, 133, 230),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text(
+                      'LOGIN',
+                    ),
+                  ),
                 ),
               ),
-              child: Text(
-                'LOGIN',
-              ),
-            ),
-          ),
-        ),
         TextButton(
           onPressed: () {
             setState(() {
@@ -303,46 +305,60 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.all(8.0),
           child: TextField(
             controller: nameController,
-            decoration: InputDecoration(border: OutlineInputBorder()),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Enter Your Name',
+              hintStyle: TextStyle(color: Colors.grey),
+            ),
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextField(
             controller: passwordController,
-            decoration: InputDecoration(border: OutlineInputBorder()),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Enter  Password',
+              hintStyle: TextStyle(color: Colors.grey),
+            ),
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextField(
             controller: desigController,
-            decoration: InputDecoration(border: OutlineInputBorder()),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Enter Your Designation',
+              hintStyle: TextStyle(color: Colors.grey),
+            ),
           ),
         ),
-        ElevatedButton(
-          onPressed: () async {
-            dp.addUser(
-              UserAddModel(
-                name: nameController.text,
-                password: passwordController.text,
-                firebaseDivToken: _token,
-                latitude: dp.latitude,
-                longitude: dp.longitude,
-                timeOfCreate: DateTime.now().toString(),
-                designation: desigController.text,
-                userImage: dp.base64Img,
-                strImg: dp.base64Img,
-              ),
-            );
-            setState(() {
-              isLogin = true;
-            });
+        dp.isLoading
+            ? CircularProgressIndicator()
+            : ElevatedButton(
+                onPressed: () async {
+                  dp.addUser(
+                    UserAddModel(
+                      name: nameController.text,
+                      password: passwordController.text,
+                      firebaseDivToken: _token,
+                      latitude: dp.latitude,
+                      longitude: dp.longitude,
+                      timeOfCreate: DateTime.now().toString(),
+                      designation: desigController.text,
+                      userImage: dp.base64Img,
+                      strImg: dp.base64Img,
+                    ),
+                  );
+                  setState(() {
+                    isLogin = true;
+                  });
 
-            //  Navigator.pop(context);
-          },
-          child: Text('SIGN IN'),
-        ),
+                  //  Navigator.pop(context);
+                },
+                child: Text('SIGN IN'),
+              ),
         TextButton(
           onPressed: () {
             setState(() {

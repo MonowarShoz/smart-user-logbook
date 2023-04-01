@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'logging_interceptor.dart';
 
 class DioClient {
@@ -17,8 +17,8 @@ class DioClient {
     dio = dioC;
     dio
       ..options.baseUrl = baseUrl
-      ..options.connectTimeout = Duration(milliseconds: 30000)
-      ..options.receiveTimeout = Duration(milliseconds: 30000)
+      ..options.connectTimeout = 30000
+      ..options.receiveTimeout = 30000
       ..httpClientAdapter
       ..options.headers = {
         'Accept': 'application/json',
@@ -26,6 +26,8 @@ class DioClient {
         'charset': 'utf-8',
       };
     dio.interceptors.add(loggingInterceptor);
+
+    //dio.interceptors.add(DioCacheInterceptor(options: CacheOptions(store: MemCacheStore(), policy: CachePolicy.request)));
   }
 
   Future<Response> get(

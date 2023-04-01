@@ -66,12 +66,10 @@ class _EditProfileState extends State<EditProfile> {
                         CircleAvatar(
                           radius: 52,
                           backgroundColor: Colors.indigo,
-                          child: dp.selectedImg != null
+                          child: dp.userModel!.strImg == null
                               ? CircleAvatar(
                                   radius: 50,
-                                  backgroundImage: FileImage(
-                                    dp.selectedImg!,
-                                  ),
+                                  child: Icon(Icons.person),
                                 )
                               : CircleAvatar(
                                   radius: 50,

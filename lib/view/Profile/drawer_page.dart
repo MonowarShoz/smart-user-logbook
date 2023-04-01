@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:technoart_monitoring/util/code_util.dart';
 import 'package:technoart_monitoring/util/dimensions.dart';
 import 'package:technoart_monitoring/view/Profile/edit_profile.dart';
 
@@ -35,7 +36,7 @@ class DrawerPage extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(horizontal: 10),
                               child: CircleAvatar(
                                 radius: 30,
-                                backgroundImage: MemoryImage(dp.convertFromBase64(dp.userModel!.userImage!)),
+                                backgroundImage: MemoryImage(dp.convertFromBase64(CodeUtil.decompress(dp.userModel!.strImg!))),
                               ),
                             )
                           : CircleAvatar(

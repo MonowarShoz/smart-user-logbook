@@ -3,6 +3,7 @@ import '../api_services/exception/api_error_handler.dart';
 import '../model/update_token_model.dart';
 import '../model/user_add_model.dart';
 import '../responseApi/api_response.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
 class DataRepo {
   final DioClient dioClient;
@@ -10,6 +11,11 @@ class DataRepo {
   DataRepo({required this.dioClient});
 
   Future<ApiResponse> getuser() async {
+    // final options = CacheOptions(
+    //   store: MemCacheStore(),
+    //   policy: CachePolicy.request,
+    //   maxStale: const Duration(days: 1),
+    // );
     try {
       final response = await dioClient.get('User');
       return ApiResponse.withSuccess(response);

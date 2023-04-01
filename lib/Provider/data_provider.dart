@@ -4,15 +4,18 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:saver_gallery/saver_gallery.dart';
+import 'package:technoart_monitoring/util/code_util.dart';
 import 'package:technoart_monitoring/util/date_converter.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import '../Models/timing_model.dart';
 import '../model/Emp_att_d_model.dart';
 import '../model/response_model.dart';
@@ -41,6 +44,7 @@ class DataProvider with ChangeNotifier {
     _userList = [];
     _isLoading = true;
     ApiResponse apiResponse = await dataRepo.getuser();
+    _isLoading = false;
     if (apiResponse.response != null && (apiResponse.response!.statusCode == 200 || apiResponse.response!.statusCode == 201)) {
       _userList = [];
       apiResponse.response!.data.forEach((element) {
@@ -212,7 +216,34 @@ class DataProvider with ChangeNotifier {
     List<int> bytes = await imgFile.readAsBytes();
     // log(bytes.toString());
     _base64Img = base64Encode(bytes);
-    log('Image string $base64Img');
+    log('Image string ${base64Img!.length}');
+  }
+
+  Future<Uint8List> testComporessList(Uint8List list) async {
+    var result = await FlutterImageCompress.compressWithList(
+      list,
+      minHeight: 1920,
+      minWidth: 1080,
+      quality: 100,
+      rotate: 135,
+    );
+    print(list.length);
+    print(result.length);
+    return result;
+  }
+
+  Future<File> testCompressAndGetFile(File file, String targetPath) async {
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      targetPath,
+      quality: 100,
+      rotate: 180,
+    );
+
+    print(file.lengthSync());
+    print(result!.lengthSync());
+
+    return result;
   }
 
   Future pickImage() async {
@@ -220,16 +251,23 @@ class DataProvider with ChangeNotifier {
       final image = await ImagePicker().pickImage(
         source: ImageSource.camera,
         preferredCameraDevice: CameraDevice.rear,
-        imageQuality: 90,
+        imageQuality: 100,
       );
-      if (image == null) return;
-      final img = File(image.path);
-      Directory? tempDir = await getExternalStorageDirectory();
-      String tempPath = tempDir!.path;
-      final String filePath = '$tempPath/image.png';
-      await img.copy(filePath);
-      // await SaverGallery.saveFile(filePath);
 
+      if (image == null) return;
+      var bytes = await image.readAsBytes();
+      //var compressedImg = testComporessList(bytes);
+
+      final img = File(image.path);
+
+      Directory? tempDir = await getTemporaryDirectory();
+      String tempPath = tempDir.path;
+      final String filePath = '$tempPath/image.jpg';
+      // var compressedImg = await testCompressAndGetFile(img, filePath);
+
+      await img.copy(filePath);
+      await SaverGallery.saveImage(bytes, name: 'img', androidExistNotSave: false);
+      //  _selectedImg = compressedImg;
       _selectedImg = img;
 
       if (selectedImg == null) return;
@@ -239,6 +277,28 @@ class DataProvider with ChangeNotifier {
     } on PlatformException catch (e) {
       print('failed $e');
     }
+  }
+
+  decomSize(String img) {
+    var str = CodeUtil.decompress(img);
+    log("decompressed Length ${str.length}");
+
+    notifyListeners();
+  }
+
+  timeFormats() {
+    // var timingIsha = '06:42';
+
+    // var hour = timingIsha.substring(0, 2);
+    // var min = timingIsha.substring(3, 5);
+
+    // TimeOfDay time = TimeOfDay(hour: int.parse(hour), minute: int.parse(min));
+    //  var newTime = DateFormat("hh:mm").parse("${time.hour}:${time.minute}");
+    var newTime = DateFormat("hh:mm").parse("19:42");
+    var amformat = DateFormat("h:mm a").format(newTime);
+    debugPrint('new time ${newTime}');
+    debugPrint('new Format ${amformat}');
+    notifyListeners(); // 3:00 PM
   }
 
   // Future<AccessToken> getAccessToken() async{
